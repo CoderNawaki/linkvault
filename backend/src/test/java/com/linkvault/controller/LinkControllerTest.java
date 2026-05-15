@@ -1,0 +1,72 @@
+package com.linkvault.controller;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.linkvault.model.Link;
+import com.linkvault.repository.LinkRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
+class LinkControllerTest {
+
+  @Autowired
+  private MockMvc mockMvc;
+
+  @Autowired
+  private LinkRepository linkRepository;
+
+  @BeforeEach
+  void setUp() {
+    linkRepository.deleteAll();
+  }
+
+  @Test
+  void createsAndListsLinks() throws Exception {
+    mockMvc.perform(post("/api/links")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "title": "Spring Boot",
+                  "url": "https://spring.io/projects/spring-boot",
+                  "tag": "backend",
+                  "description": "Backend framework"
+                }
+                """))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").exists())
+        .andExpect(jsonPath("$.title").value("Spring Boot"))
+        .andExpect(jsonPath("$.tag").value("backend"));
+
+    mockMvc.perform(get("/api/links"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].title").value("Spring Boot"))
+        .andExpect(jsonPath("$[0].tag").value("backend"));
+  }
+
+  @Test
+  void deletesLinks() throws Exception {
+    Link link = new Link();
+    link.setTitle("Docs");
+    link.setUrl("https://example.com/docs");
+    Link savedLink = linkRepository.save(link);
+
+    mockMvc.perform(delete("/api/links/{id}", savedLink.getId()))
+        .andExpect(status().isNoContent());
+
+    assertThat(linkRepository.existsById(savedLink.getId())).isFalse();
+  }
+}
