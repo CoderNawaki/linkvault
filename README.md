@@ -49,11 +49,22 @@ linkvault/
 
 ## Local Development
 
-Start PostgreSQL and the backend with Docker Compose:
+Run the backend locally without Docker:
+
+```bash
+cd backend
+mvn spring-boot:run
+```
+
+Local backend runs use an embedded H2 database stored under `backend/data/`. This keeps the first development loop simple because PostgreSQL does not need to be running.
+
+Start PostgreSQL and the backend together with Docker Compose:
 
 ```bash
 docker compose up --build
 ```
+
+Docker Compose overrides the local H2 settings with PostgreSQL connection environment variables.
 
 Run the frontend in development mode:
 
