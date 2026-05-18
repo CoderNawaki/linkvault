@@ -19,6 +19,7 @@ frontend/.vite/
 
 # Backend
 backend/target/
+backend/data/
 backend/.mvn/wrapper/maven-wrapper.jar
 
 # Environment files with local secrets
