@@ -17,7 +17,6 @@ public class Link {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @NotBlank
   @Size(max = 120)
   @Column(nullable = false, length = 120)
   private String title;
