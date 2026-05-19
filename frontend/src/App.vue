@@ -8,6 +8,7 @@ import { createLink, deleteLink, getLinks } from "./services/api";
 const links = ref([]);
 const activeTag = ref("");
 const statusMessage = ref("");
+const loadError = ref("");
 const isLoading = ref(false);
 
 const availableTags = computed(() => {
@@ -26,14 +27,18 @@ const filteredLinks = computed(() => {
   return links.value.filter((link) => link.tag === activeTag.value);
 });
 
-async function loadLinks() {
+async function loadLinks({ clearStatus = true } = {}) {
   isLoading.value = true;
-  statusMessage.value = "";
+  loadError.value = "";
+
+  if (clearStatus) {
+    statusMessage.value = "";
+  }
 
   try {
     links.value = await getLinks();
   } catch (error) {
-    statusMessage.value = error.message;
+    loadError.value = error.message;
   } finally {
     isLoading.value = false;
   }
@@ -45,7 +50,7 @@ async function handleCreateLink(payload) {
   try {
     await createLink(payload);
     statusMessage.value = "Link saved.";
-    await loadLinks();
+    await loadLinks({ clearStatus: false });
   } catch (error) {
     statusMessage.value = error.message;
   }
@@ -57,7 +62,7 @@ async function handleDeleteLink(id) {
   try {
     await deleteLink(id);
     statusMessage.value = "Link deleted.";
-    await loadLinks();
+    await loadLinks({ clearStatus: false });
   } catch (error) {
     statusMessage.value = error.message;
   }
@@ -85,7 +90,12 @@ onMounted(loadLinks);
       </div>
 
       <p class="status" role="status">{{ statusMessage }}</p>
-      <LinkList :links="filteredLinks" :is-loading="isLoading" @delete-link="handleDeleteLink" />
+      <LinkList
+        :links="filteredLinks"
+        :is-loading="isLoading"
+        :error-message="loadError"
+        @delete-link="handleDeleteLink"
+      />
     </section>
   </main>
 </template>
