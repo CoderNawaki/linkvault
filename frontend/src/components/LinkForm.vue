@@ -37,7 +37,7 @@ function submitForm() {
     <div class="field-grid">
       <label>
         <span>Title</span>
-        <input v-model="form.title" type="text" required maxlength="120" placeholder="Vue docs" />
+        <input v-model="form.title" type="text" maxlength="120" placeholder="Vue docs" />
       </label>
 
       <label>

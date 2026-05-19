@@ -58,6 +58,19 @@ class LinkControllerTest {
   }
 
   @Test
+  void autoFetchesTitleWhenBlank() throws Exception {
+    mockMvc.perform(post("/api/links")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "url": "https://google.com"
+                }
+                """))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.title").exists());
+  }
+
+  @Test
   void listsNewestLinksFirst() throws Exception {
     Link olderLink = new Link();
     olderLink.setTitle("Older docs");

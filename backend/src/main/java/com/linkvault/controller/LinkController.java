@@ -2,6 +2,7 @@ package com.linkvault.controller;
 
 import com.linkvault.model.Link;
 import com.linkvault.repository.LinkRepository;
+import com.linkvault.service.TitleService;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -22,9 +23,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class LinkController {
 
   private final LinkRepository linkRepository;
+  private final TitleService titleService;
 
-  public LinkController(LinkRepository linkRepository) {
+  public LinkController(LinkRepository linkRepository, TitleService titleService) {
     this.linkRepository = linkRepository;
+    this.titleService = titleService;
   }
 
   @GetMapping
@@ -34,6 +37,15 @@ public class LinkController {
 
   @PostMapping
   public ResponseEntity<Link> createLink(@Valid @RequestBody Link link) {
+    if (link.getTitle() == null || link.getTitle().isBlank()) {
+      String fetchedTitle = titleService.fetchTitle(link.getUrl());
+      if (fetchedTitle != null && !fetchedTitle.isBlank()) {
+        link.setTitle(fetchedTitle);
+      } else {
+        link.setTitle(link.getUrl());
+      }
+    }
+
     Link savedLink = linkRepository.save(link);
     URI location = ServletUriComponentsBuilder.fromCurrentRequest()
         .path("/{id}")
