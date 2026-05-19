@@ -58,6 +58,26 @@ class LinkControllerTest {
   }
 
   @Test
+  void listsNewestLinksFirst() throws Exception {
+    Link olderLink = new Link();
+    olderLink.setTitle("Older docs");
+    olderLink.setUrl("https://example.com/older");
+    linkRepository.saveAndFlush(olderLink);
+
+    Thread.sleep(10);
+
+    Link newerLink = new Link();
+    newerLink.setTitle("Newer docs");
+    newerLink.setUrl("https://example.com/newer");
+    linkRepository.saveAndFlush(newerLink);
+
+    mockMvc.perform(get("/api/links"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].title").value("Newer docs"))
+        .andExpect(jsonPath("$[1].title").value("Older docs"));
+  }
+
+  @Test
   void deletesLinks() throws Exception {
     Link link = new Link();
     link.setTitle("Docs");
