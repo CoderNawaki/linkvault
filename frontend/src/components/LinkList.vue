@@ -14,6 +14,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  deletingId: {
+    type: Number,
+    default: null,
+  },
 });
 
 defineEmits(["delete-link"]);
@@ -58,7 +62,14 @@ const summaryText = computed(() => {
           <div class="link-meta">
             <span class="link-url">{{ link.url }}</span>
             <span v-if="link.tag" class="tag">{{ link.tag }}</span>
-            <button class="delete-button" type="button" @click="$emit('delete-link', link.id)">Delete</button>
+            <button
+              class="delete-button"
+              type="button"
+              :disabled="deletingId === link.id"
+              @click="$emit('delete-link', link.id)"
+            >
+              {{ deletingId === link.id ? "Deleting..." : "Delete" }}
+            </button>
           </div>
         </li>
       </template>

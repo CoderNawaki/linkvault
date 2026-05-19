@@ -10,6 +10,7 @@ const activeTag = ref("");
 const statusMessage = ref("");
 const loadError = ref("");
 const isLoading = ref(false);
+const deletingId = ref(null);
 
 const availableTags = computed(() => {
   const tags = links.value
@@ -57,6 +58,11 @@ async function handleCreateLink(payload) {
 }
 
 async function handleDeleteLink(id) {
+  if (!window.confirm("Are you sure you want to delete this link?")) {
+    return;
+  }
+
+  deletingId.value = id;
   statusMessage.value = "Deleting link...";
 
   try {
@@ -65,6 +71,8 @@ async function handleDeleteLink(id) {
     await loadLinks({ clearStatus: false });
   } catch (error) {
     statusMessage.value = error.message;
+  } finally {
+    deletingId.value = null;
   }
 }
 
@@ -92,6 +100,7 @@ onMounted(loadLinks);
       <p class="status" role="status">{{ statusMessage }}</p>
       <LinkList
         :links="filteredLinks"
+        :deleting-id="deletingId"
         :is-loading="isLoading"
         :error-message="loadError"
         @delete-link="handleDeleteLink"
