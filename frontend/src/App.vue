@@ -13,11 +13,12 @@ const isLoading = ref(false);
 const deletingId = ref(null);
 
 const availableTags = computed(() => {
-  const tags = links.value
-    .map((link) => link.tag)
-    .filter(Boolean);
+  const allTags = links.value.flatMap((link) => {
+    if (!link.tags) return [];
+    return link.tags.split(",").map((tag) => tag.trim()).filter(Boolean);
+  });
 
-  return [...new Set(tags)].sort((first, second) => first.localeCompare(second));
+  return [...new Set(allTags)].sort((a, b) => a.localeCompare(b));
 });
 
 const filteredLinks = computed(() => {
@@ -25,7 +26,11 @@ const filteredLinks = computed(() => {
     return links.value;
   }
 
-  return links.value.filter((link) => link.tag === activeTag.value);
+  return links.value.filter((link) => {
+    if (!link.tags) return false;
+    const tags = link.tags.split(",").map((tag) => tag.trim()).filter(Boolean);
+    return tags.includes(activeTag.value);
+  });
 });
 
 async function loadLinks({ clearStatus = true } = {}) {
@@ -104,6 +109,7 @@ onMounted(loadLinks);
         :is-loading="isLoading"
         :error-message="loadError"
         @delete-link="handleDeleteLink"
+        @filter-tag="(tag) => (activeTag = tag)"
       />
     </section>
   </main>
