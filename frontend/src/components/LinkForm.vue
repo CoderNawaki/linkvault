@@ -13,7 +13,7 @@ const emit = defineEmits(["create-link"]);
 const form = reactive({
   title: "",
   url: "",
-  tag: "",
+  tags: "",
   description: "",
 });
 
@@ -21,13 +21,13 @@ function submitForm() {
   emit("create-link", {
     title: form.title.trim(),
     url: form.url.trim(),
-    tag: form.tag.trim(),
+    tags: form.tags.trim(),
     description: form.description.trim(),
   });
 
   form.title = "";
   form.url = "";
-  form.tag = "";
+  form.tags = "";
   form.description = "";
 }
 </script>
@@ -48,8 +48,8 @@ function submitForm() {
 
     <div class="field-grid">
       <label>
-        <span>Tag</span>
-        <input v-model="form.tag" type="text" maxlength="40" placeholder="frontend" />
+        <span>Tags (comma separated)</span>
+        <input v-model="form.tags" type="text" maxlength="255" placeholder="frontend, docs, vue" />
       </label>
 
       <label>

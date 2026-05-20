@@ -20,7 +20,7 @@ const props = defineProps({
   },
 });
 
-defineEmits(["delete-link"]);
+const emit = defineEmits(["delete-link", "filter-tag"]);
 
 const summaryText = computed(() => {
   if (props.isLoading) {
@@ -34,6 +34,22 @@ const summaryText = computed(() => {
   const count = props.links.length;
   return `${count} saved ${count === 1 ? "link" : "links"}`;
 });
+
+function getTags(tagsString) {
+  if (!tagsString) return [];
+  return tagsString
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
+function handleDelete(id) {
+  emit("delete-link", id);
+}
+
+function handleTagClick(tag) {
+  emit("filter-tag", tag);
+}
 </script>
 
 <template>
@@ -61,12 +77,23 @@ const summaryText = computed(() => {
 
           <div class="link-meta">
             <span class="link-url">{{ link.url }}</span>
-            <span v-if="link.tag" class="tag">{{ link.tag }}</span>
+            <div class="tags-container">
+              <button
+                v-for="tag in getTags(link.tags)"
+                :key="tag"
+                class="tag clickable-tag"
+                type="button"
+                title="Filter by this tag"
+                @click="handleTagClick(tag)"
+              >
+                {{ tag }}
+              </button>
+            </div>
             <button
               class="delete-button"
               type="button"
               :disabled="deletingId === link.id"
-              @click="$emit('delete-link', link.id)"
+              @click="handleDelete(link.id)"
             >
               {{ deletingId === link.id ? "Deleting..." : "Delete" }}
             </button>
@@ -76,3 +103,19 @@ const summaryText = computed(() => {
     </ul>
   </section>
 </template>
+
+<style scoped>
+.clickable-tag {
+  cursor: pointer;
+  transition: opacity 0.2s;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+}
+
+.clickable-tag:hover {
+  opacity: 0.8;
+}
+</style>

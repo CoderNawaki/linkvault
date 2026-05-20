@@ -42,19 +42,19 @@ class LinkControllerTest {
                 {
                   "title": "Spring Boot",
                   "url": "https://spring.io/projects/spring-boot",
-                  "tag": "backend",
+                  "tags": "backend,java",
                   "description": "Backend framework"
                 }
                 """))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.id").exists())
         .andExpect(jsonPath("$.title").value("Spring Boot"))
-        .andExpect(jsonPath("$.tag").value("backend"));
+        .andExpect(jsonPath("$.tags").value("backend,java"));
 
     mockMvc.perform(get("/api/links"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].title").value("Spring Boot"))
-        .andExpect(jsonPath("$[0].tag").value("backend"));
+        .andExpect(jsonPath("$[0].tags").value("backend,java"));
   }
 
   @Test

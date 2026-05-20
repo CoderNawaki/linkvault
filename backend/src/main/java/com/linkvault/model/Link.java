@@ -28,9 +28,9 @@ public class Link {
   @Column(length = 1000)
   private String description;
 
-  @Size(max = 40)
-  @Column(length = 40)
-  private String tag;
+  @Size(max = 255)
+  @Column(length = 255)
+  private String tags;
 
   @Column(nullable = false, updatable = false)
   private Instant createdAt;
@@ -72,12 +72,12 @@ public class Link {
     this.description = description;
   }
 
-  public String getTag() {
-    return tag;
+  public String getTags() {
+    return tags;
   }
 
-  public void setTag(String tag) {
-    this.tag = tag;
+  public void setTags(String tags) {
+    this.tags = tags;
   }
 
   public Instant getCreatedAt() {
