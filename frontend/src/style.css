@@ -228,6 +228,13 @@ button:disabled {
   font-size: 0.82rem;
   font-weight: 800;
   padding: 6px 10px;
+  line-height: 1;
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .delete-button {
