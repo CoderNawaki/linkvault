@@ -73,6 +73,7 @@ function handleTagClick(tag) {
               {{ link.title }}
             </a>
             <p class="link-description">{{ link.description || "No description added." }}</p>
+            <p v-if="link.personalNote" class="link-note">{{ link.personalNote }}</p>
           </div>
 
           <div class="link-meta">
