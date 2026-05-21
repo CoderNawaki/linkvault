@@ -158,7 +158,11 @@ textarea:focus {
 }
 
 .tag-filter {
-  width: min(320px, 100%);
+  width: auto;
+}
+
+.search-box {
+  flex: 1;
 }
 
 .list-count {
