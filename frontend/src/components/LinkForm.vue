@@ -15,6 +15,7 @@ const form = reactive({
   url: "",
   tags: "",
   description: "",
+  personalNote: "",
 });
 
 function submitForm() {
@@ -23,12 +24,14 @@ function submitForm() {
     url: form.url.trim(),
     tags: form.tags.trim(),
     description: form.description.trim(),
+    personalNote: form.personalNote.trim(),
   });
 
   form.title = "";
   form.url = "";
   form.tags = "";
   form.description = "";
+  form.personalNote = "";
 }
 </script>
 
@@ -57,6 +60,16 @@ function submitForm() {
         <input v-model="form.description" type="text" maxlength="200" placeholder="Why this link matters" />
       </label>
     </div>
+
+    <label>
+      <span>Personal note</span>
+      <textarea
+        v-model="form.personalNote"
+        maxlength="1000"
+        rows="4"
+        placeholder="How you plan to use this link"
+      ></textarea>
+    </label>
 
     <div class="form-actions">
       <button type="submit" :disabled="disabled">Save link</button>

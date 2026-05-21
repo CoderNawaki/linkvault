@@ -28,6 +28,9 @@ public class Link {
   @Column(length = 1000)
   private String description;
 
+  @Column(length = 1000)
+  private String personalNote;
+
   @Size(max = 255)
   @Column(length = 255)
   private String tags;
@@ -70,6 +73,14 @@ public class Link {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public String getPersonalNote() {
+    return personalNote;
+  }
+
+  public void setPersonalNote(String personalNote) {
+    this.personalNote = personalNote;
   }
 
   public String getTags() {
