@@ -7,6 +7,7 @@ import { createLink, deleteLink, getLinks } from "./services/api";
 
 const links = ref([]);
 const activeTag = ref("");
+const searchQuery = ref("");
 const statusMessage = ref("");
 const loadError = ref("");
 const isLoading = ref(false);
@@ -22,15 +23,28 @@ const availableTags = computed(() => {
 });
 
 const filteredLinks = computed(() => {
-  if (!activeTag.value) {
-    return links.value;
+  let result = links.value;
+
+  if (activeTag.value) {
+    result = result.filter((link) => {
+      if (!link.tags) return false;
+      const tags = link.tags.split(",").map((tag) => tag.trim()).filter(Boolean);
+      return tags.includes(activeTag.value);
+    });
   }
 
-  return links.value.filter((link) => {
-    if (!link.tags) return false;
-    const tags = link.tags.split(",").map((tag) => tag.trim()).filter(Boolean);
-    return tags.includes(activeTag.value);
-  });
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    result = result.filter((link) => {
+      return (
+        link.title?.toLowerCase().includes(query) ||
+        link.description?.toLowerCase().includes(query) ||
+        link.url?.toLowerCase().includes(query)
+      );
+    });
+  }
+
+  return result;
 });
 
 async function loadLinks({ clearStatus = true } = {}) {
@@ -97,6 +111,14 @@ onMounted(loadLinks);
 
       <div class="list-tools">
         <TagFilter v-model="activeTag" :tags="availableTags" />
+        <div class="search-box">
+          <input
+            v-model="searchQuery"
+            type="search"
+            placeholder="Search links..."
+            aria-label="Search links"
+          />
+        </div>
         <button class="secondary-button" type="button" :disabled="isLoading" @click="loadLinks">
           Refresh
         </button>
