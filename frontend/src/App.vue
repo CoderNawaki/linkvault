@@ -3,15 +3,17 @@ import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import LinkForm from "./components/LinkForm.vue";
 import LinkList from "./components/LinkList.vue";
 import TagFilter from "./components/TagFilter.vue";
-import { createLink, deleteLink, getLinks } from "./services/api";
+import { createLink, deleteLink, getLinks, toggleFavourite } from "./services/api";
 
 const links = ref([]);
 const activeTag = ref(localStorage.getItem("activeTag") || "");
 const searchQuery = ref(localStorage.getItem("searchQuery") || "");
+const showFavouritesOnly = ref(localStorage.getItem("showFavouritesOnly") === "true");
 const statusMessage = ref("");
 const loadError = ref("");
 const isLoading = ref(false);
 const deletingId = ref(null);
+const togglingId = ref(null);
 const searchInput = ref(null);
 
 watch(activeTag, (newTag) => {
@@ -20,6 +22,10 @@ watch(activeTag, (newTag) => {
 
 watch(searchQuery, (newQuery) => {
   localStorage.setItem("searchQuery", newQuery);
+});
+
+watch(showFavouritesOnly, (newVal) => {
+  localStorage.setItem("showFavouritesOnly", newVal);
 });
 
 const availableTags = computed(() => {
@@ -33,6 +39,10 @@ const availableTags = computed(() => {
 
 const filteredLinks = computed(() => {
   let result = links.value;
+
+  if (showFavouritesOnly.value) {
+    result = result.filter((link) => link.favourite);
+  }
 
   if (activeTag.value) {
     result = result.filter((link) => {
@@ -105,6 +115,21 @@ async function handleDeleteLink(id) {
   }
 }
 
+async function handleToggleFavourite(id) {
+  togglingId.value = id;
+  try {
+    const updatedLink = await toggleFavourite(id);
+    const index = links.value.findIndex((link) => link.id === id);
+    if (index !== -1) {
+      links.value[index] = updatedLink;
+    }
+  } catch (error) {
+    statusMessage.value = error.message;
+  } finally {
+    togglingId.value = null;
+  }
+}
+
 function handleKeydown(event) {
   if (
     event.key === "/" &&
@@ -157,6 +182,14 @@ onUnmounted(() => {
             &times;
           </button>
         </div>
+        <button
+          class="secondary-button favourite-filter"
+          :class="{ active: showFavouritesOnly }"
+          type="button"
+          @click="showFavouritesOnly = !showFavouritesOnly"
+        >
+          {{ showFavouritesOnly ? "Starred only" : "All links" }}
+        </button>
         <button class="secondary-button" type="button" :disabled="isLoading" @click="loadLinks">
           Refresh
         </button>
@@ -167,11 +200,21 @@ onUnmounted(() => {
         :links="filteredLinks"
         :search-query="searchQuery"
         :deleting-id="deletingId"
+        :toggling-id="togglingId"
         :is-loading="isLoading"
         :error-message="loadError"
         @delete-link="handleDeleteLink"
+        @toggle-favourite="handleToggleFavourite"
         @filter-tag="(tag) => (activeTag = tag)"
       />
     </section>
   </main>
 </template>
+
+<style scoped>
+.favourite-filter.active {
+  background: #fef9c3;
+  border-color: #eaaa08;
+  color: #854d0e;
+}
+</style>

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,6 +54,16 @@ public class LinkController {
         .toUri();
 
     return ResponseEntity.created(location).body(savedLink);
+  }
+
+  @PatchMapping("/{id}/favourite")
+  public ResponseEntity<Link> toggleFavourite(@PathVariable Long id) {
+    return linkRepository.findById(id)
+        .map(link -> {
+          link.setFavourite(!link.isFavourite());
+          return ResponseEntity.ok(linkRepository.save(link));
+        })
+        .orElse(ResponseEntity.notFound().build());
   }
 
   @DeleteMapping("/{id}")
