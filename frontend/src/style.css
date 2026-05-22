@@ -172,6 +172,14 @@ textarea:focus {
   padding-right: 40px;
 }
 
+/* Hide default browser clear button for type="search" */
+.search-box input::-webkit-search-decoration,
+.search-box input::-webkit-search-cancel-button,
+.search-box input::-webkit-search-results-button,
+.search-box input::-webkit-search-results-decoration {
+  display: none;
+}
+
 .clear-search {
   position: absolute;
   right: 8px;
