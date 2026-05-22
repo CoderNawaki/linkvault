@@ -35,6 +35,9 @@ public class Link {
   @Column(length = 255)
   private String tags;
 
+  @Column(nullable = true)
+  private Boolean isFavourite = false;
+
   @Column(nullable = false, updatable = false)
   private Instant createdAt;
 
@@ -89,6 +92,14 @@ public class Link {
 
   public void setTags(String tags) {
     this.tags = tags;
+  }
+
+  public boolean isFavourite() {
+    return isFavourite != null && isFavourite;
+  }
+
+  public void setFavourite(Boolean favourite) {
+    isFavourite = favourite;
   }
 
   public Instant getCreatedAt() {

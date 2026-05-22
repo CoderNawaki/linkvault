@@ -3,6 +3,7 @@ package com.linkvault.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -91,6 +92,22 @@ class LinkControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].title").value("Newer docs"))
         .andExpect(jsonPath("$[1].title").value("Older docs"));
+  }
+
+  @Test
+  void togglesFavouriteStatus() throws Exception {
+    Link link = new Link();
+    link.setTitle("Favourite Link");
+    link.setUrl("https://example.com");
+    Link savedLink = linkRepository.save(link);
+
+    mockMvc.perform(patch("/api/links/{id}/favourite", savedLink.getId()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.favourite").value(true));
+
+    mockMvc.perform(patch("/api/links/{id}/favourite", savedLink.getId()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.favourite").value(false));
   }
 
   @Test

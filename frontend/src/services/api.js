@@ -36,3 +36,9 @@ export function deleteLink(id) {
     method: "DELETE",
   });
 }
+
+export function toggleFavourite(id) {
+  return request(`/api/links/${id}/favourite`, {
+    method: "PATCH",
+  });
+}
