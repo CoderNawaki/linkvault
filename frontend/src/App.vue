@@ -1,18 +1,26 @@
 <script setup>
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import LinkForm from "./components/LinkForm.vue";
 import LinkList from "./components/LinkList.vue";
 import TagFilter from "./components/TagFilter.vue";
 import { createLink, deleteLink, getLinks } from "./services/api";
 
 const links = ref([]);
-const activeTag = ref("");
-const searchQuery = ref("");
+const activeTag = ref(localStorage.getItem("activeTag") || "");
+const searchQuery = ref(localStorage.getItem("searchQuery") || "");
 const statusMessage = ref("");
 const loadError = ref("");
 const isLoading = ref(false);
 const deletingId = ref(null);
 const searchInput = ref(null);
+
+watch(activeTag, (newTag) => {
+  localStorage.setItem("activeTag", newTag);
+});
+
+watch(searchQuery, (newQuery) => {
+  localStorage.setItem("searchQuery", newQuery);
+});
 
 const availableTags = computed(() => {
   const allTags = links.value.flatMap((link) => {
