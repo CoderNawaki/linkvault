@@ -163,6 +163,34 @@ textarea:focus {
 
 .search-box {
   flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-box input {
+  padding-right: 40px;
+}
+
+.clear-search {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 0 4px;
+  min-height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clear-search:hover {
+  color: var(--danger);
+  background: none;
 }
 
 .list-count {

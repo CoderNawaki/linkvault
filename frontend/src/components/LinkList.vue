@@ -18,6 +18,10 @@ const props = defineProps({
     type: Number,
     default: null,
   },
+  searchQuery: {
+    type: String,
+    default: "",
+  },
 });
 
 const emit = defineEmits(["delete-link", "filter-tag"]);
@@ -65,7 +69,12 @@ function handleTagClick(tag) {
     <ul class="links-list" aria-live="polite">
       <li v-if="isLoading" class="empty-state">Loading links...</li>
       <li v-else-if="errorMessage" class="empty-state error-state">{{ errorMessage }}</li>
-      <li v-else-if="links.length === 0" class="empty-state">No links saved yet.</li>
+      <li v-else-if="links.length === 0" class="empty-state">
+        <template v-if="searchQuery">
+          No links match your search for "{{ searchQuery }}".
+        </template>
+        <template v-else> No links saved yet. </template>
+      </li>
       <template v-else>
         <li v-for="link in links" :key="link.id" class="link-item">
           <div>
