@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import LinkForm from "./components/LinkForm.vue";
 import LinkList from "./components/LinkList.vue";
 import TagFilter from "./components/TagFilter.vue";
@@ -12,6 +12,7 @@ const statusMessage = ref("");
 const loadError = ref("");
 const isLoading = ref(false);
 const deletingId = ref(null);
+const searchInput = ref(null);
 
 const availableTags = computed(() => {
   const allTags = links.value.flatMap((link) => {
@@ -39,6 +40,7 @@ const filteredLinks = computed(() => {
       return (
         link.title?.toLowerCase().includes(query) ||
         link.description?.toLowerCase().includes(query) ||
+        link.personalNote?.toLowerCase().includes(query) ||
         link.url?.toLowerCase().includes(query)
       );
     });
@@ -95,7 +97,25 @@ async function handleDeleteLink(id) {
   }
 }
 
-onMounted(loadLinks);
+function handleKeydown(event) {
+  if (
+    event.key === "/" &&
+    document.activeElement.tagName !== "INPUT" &&
+    document.activeElement.tagName !== "TEXTAREA"
+  ) {
+    event.preventDefault();
+    searchInput.value?.focus();
+  }
+}
+
+onMounted(() => {
+  loadLinks();
+  window.addEventListener("keydown", handleKeydown);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("keydown", handleKeydown);
+});
 </script>
 
 <template>
@@ -113,11 +133,21 @@ onMounted(loadLinks);
         <TagFilter v-model="activeTag" :tags="availableTags" />
         <div class="search-box">
           <input
+            ref="searchInput"
             v-model="searchQuery"
             type="search"
-            placeholder="Search links..."
+            placeholder="Search links... (Press / to focus)"
             aria-label="Search links"
           />
+          <button
+            v-if="searchQuery"
+            type="button"
+            class="clear-search"
+            title="Clear search"
+            @click="searchQuery = ''"
+          >
+            &times;
+          </button>
         </div>
         <button class="secondary-button" type="button" :disabled="isLoading" @click="loadLinks">
           Refresh
@@ -127,6 +157,7 @@ onMounted(loadLinks);
       <p class="status" role="status">{{ statusMessage }}</p>
       <LinkList
         :links="filteredLinks"
+        :search-query="searchQuery"
         :deleting-id="deletingId"
         :is-loading="isLoading"
         :error-message="loadError"
