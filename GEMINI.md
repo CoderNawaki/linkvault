@@ -37,6 +37,7 @@ Foundational mandates for LinkVault development.
 ### Backend
 - **Test:** `cd backend && mvn test`
 - **Run:** `cd backend && mvn spring-boot:run`
+- **Hot Reload:** Added `spring-boot-devtools`. In VS Code, ensure "Java > Save Actions: Build" is enabled, or manually trigger a build (Cmd+B/Ctrl+B) to refresh the running app instantly.
 
 ### Frontend
 - **Build:** `cd frontend && npm run build`
