@@ -9,6 +9,7 @@ const links = ref([]);
 const activeTag = ref(localStorage.getItem("activeTag") || "");
 const searchQuery = ref(localStorage.getItem("searchQuery") || "");
 const showFavouritesOnly = ref(localStorage.getItem("showFavouritesOnly") === "true");
+const sortBy = ref(localStorage.getItem("sortBy") || "newest");
 const statusMessage = ref("");
 const loadError = ref("");
 const isLoading = ref(false);
@@ -28,6 +29,10 @@ watch(showFavouritesOnly, (newVal) => {
   localStorage.setItem("showFavouritesOnly", newVal);
 });
 
+watch(sortBy, (newVal) => {
+  localStorage.setItem("sortBy", newVal);
+});
+
 const availableTags = computed(() => {
   const allTags = links.value.flatMap((link) => {
     if (!link.tags) return [];
@@ -38,7 +43,7 @@ const availableTags = computed(() => {
 });
 
 const filteredLinks = computed(() => {
-  let result = links.value;
+  let result = [...links.value];
 
   if (showFavouritesOnly.value) {
     result = result.filter((link) => link.favourite);
@@ -63,6 +68,18 @@ const filteredLinks = computed(() => {
       );
     });
   }
+
+  // Sorting
+  result.sort((a, b) => {
+    if (sortBy.value === "newest") {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    } else if (sortBy.value === "oldest") {
+      return new Date(a.createdAt) - new Date(b.createdAt);
+    } else if (sortBy.value === "title") {
+      return (a.title || "").localeCompare(b.title || "");
+    }
+    return 0;
+  });
 
   return result;
 });
@@ -182,6 +199,13 @@ onUnmounted(() => {
             &times;
           </button>
         </div>
+        <div class="sort-tool">
+          <select v-model="sortBy" aria-label="Sort links">
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="title">Title (A-Z)</option>
+          </select>
+        </div>
         <button
           class="secondary-button favourite-filter"
           :class="{ active: showFavouritesOnly }"
@@ -216,5 +240,10 @@ onUnmounted(() => {
   background: #fef9c3;
   border-color: #eaaa08;
   color: #854d0e;
+}
+
+.sort-tool select {
+  width: auto;
+  min-width: 140px;
 }
 </style>
