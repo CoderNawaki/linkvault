@@ -147,6 +147,19 @@ async function handleToggleFavourite(id) {
   }
 }
 
+function handleExportJSON() {
+  const jsonString = JSON.stringify(links.value, null, 2);
+  const blob = new Blob([jsonString], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  const date = new Date().toISOString().split("T")[0];
+
+  link.href = url;
+  link.download = `linkvault-export-${date}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 function handleKeydown(event) {
   if (
     event.key === "/" &&
@@ -214,9 +227,14 @@ onUnmounted(() => {
         >
           {{ showFavouritesOnly ? "Starred only" : "All links" }}
         </button>
-        <button class="secondary-button" type="button" :disabled="isLoading" @click="loadLinks">
-          Refresh
-        </button>
+        <div class="actions-group">
+          <button class="secondary-button" type="button" title="Download backup" @click="handleExportJSON">
+            Export
+          </button>
+          <button class="secondary-button" type="button" :disabled="isLoading" @click="loadLinks">
+            Refresh
+          </button>
+        </div>
       </div>
 
       <p class="status" role="status">{{ statusMessage }}</p>
@@ -245,5 +263,10 @@ onUnmounted(() => {
 .sort-tool select {
   width: auto;
   min-width: 140px;
+}
+
+.actions-group {
+  display: flex;
+  gap: 8px;
 }
 </style>
