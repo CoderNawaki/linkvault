@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.Instant;
 
@@ -22,6 +23,7 @@ public class Link {
   private String title;
 
   @NotBlank
+  @Pattern(regexp = "(?i)^https?://.+$", message = "URL must start with http:// or https://")
   @Column(nullable = false, length = 2048)
   private String url;
 

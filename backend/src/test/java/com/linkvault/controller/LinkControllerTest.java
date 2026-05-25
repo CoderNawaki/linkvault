@@ -75,6 +75,18 @@ class LinkControllerTest {
   }
 
   @Test
+  void rejectsNonHttpUrls() throws Exception {
+    mockMvc.perform(post("/api/links")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "url": "file:///etc/passwd"
+                }
+                """))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
   void listsNewestLinksFirst() throws Exception {
     Link olderLink = new Link();
     olderLink.setTitle("Older docs");

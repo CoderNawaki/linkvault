@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @CrossOrigin(origins = "*")
 @RestController
+@Validated
 @RequestMapping("/api/links")
 public class LinkController {
 
@@ -38,12 +40,13 @@ public class LinkController {
 
   @PostMapping
   public ResponseEntity<Link> createLink(@Valid @RequestBody Link link) {
+    String url = link.getUrl();
     if (link.getTitle() == null || link.getTitle().isBlank()) {
-      String fetchedTitle = titleService.fetchTitle(link.getUrl());
+      String fetchedTitle = titleService.fetchTitle(url);
       if (fetchedTitle != null && !fetchedTitle.isBlank()) {
         link.setTitle(fetchedTitle);
       } else {
-        link.setTitle(link.getUrl());
+        link.setTitle(url);
       }
     }
 
