@@ -6,6 +6,14 @@ const props = defineProps({
     type: Array,
     required: true,
   },
+  totalLinks: {
+    type: Number,
+    required: true,
+  },
+  activeTag: {
+    type: String,
+    default: "",
+  },
   isLoading: {
     type: Boolean,
     default: false,
@@ -26,9 +34,13 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  showFavouritesOnly: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-const emit = defineEmits(["delete-link", "filter-tag", "toggle-favourite"]);
+const emit = defineEmits(["clear-filters", "delete-link", "filter-tag", "toggle-favourite"]);
 
 const summaryText = computed(() => {
   if (props.isLoading) {
@@ -41,6 +53,40 @@ const summaryText = computed(() => {
 
   const count = props.links.length;
   return `${count} saved ${count === 1 ? "link" : "links"}`;
+});
+
+const hasActiveFilters = computed(() => {
+  return Boolean(props.searchQuery || props.activeTag || props.showFavouritesOnly);
+});
+
+const emptyTitle = computed(() => {
+  if (props.totalLinks === 0) {
+    return "Your vault is ready for its first link.";
+  }
+
+  return "No links match the current view.";
+});
+
+const emptyMessage = computed(() => {
+  if (props.totalLinks === 0) {
+    return "Save a URL with a short description and tags, then it will appear here for searching and filtering.";
+  }
+
+  const filters = [];
+
+  if (props.searchQuery) {
+    filters.push(`search "${props.searchQuery}"`);
+  }
+
+  if (props.activeTag) {
+    filters.push(`tag "${props.activeTag}"`);
+  }
+
+  if (props.showFavouritesOnly) {
+    filters.push("starred links only");
+  }
+
+  return `Nothing matched ${filters.join(", ")}. Clear the filters to see all saved links.`;
 });
 
 function getTags(tagsString) {
@@ -78,10 +124,17 @@ function handleToggleFavourite(id) {
       <li v-if="isLoading" class="empty-state">Loading links...</li>
       <li v-else-if="errorMessage" class="empty-state error-state">{{ errorMessage }}</li>
       <li v-else-if="links.length === 0" class="empty-state">
-        <template v-if="searchQuery">
-          No links match your search for "{{ searchQuery }}".
-        </template>
-        <template v-else> No links saved yet. </template>
+        <div class="empty-state-mark" aria-hidden="true">+</div>
+        <h3>{{ emptyTitle }}</h3>
+        <p>{{ emptyMessage }}</p>
+        <button
+          v-if="totalLinks > 0 && hasActiveFilters"
+          type="button"
+          class="secondary-button"
+          @click="$emit('clear-filters')"
+        >
+          Clear filters
+        </button>
       </li>
       <template v-else>
         <li v-for="link in links" :key="link.id" class="link-item">
@@ -167,11 +220,8 @@ function handleToggleFavourite(id) {
 .clickable-tag {
   cursor: pointer;
   transition: opacity 0.2s;
-  background: none;
   border: none;
-  padding: 0;
   font: inherit;
-  color: inherit;
 }
 
 .clickable-tag:hover {
