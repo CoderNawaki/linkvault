@@ -147,6 +147,12 @@ async function handleToggleFavourite(id) {
   }
 }
 
+function clearFilters() {
+  activeTag.value = "";
+  searchQuery.value = "";
+  showFavouritesOnly.value = false;
+}
+
 function handleExportJSON() {
   const jsonString = JSON.stringify(links.value, null, 2);
   const blob = new Blob([jsonString], { type: "application/json" });
@@ -240,7 +246,10 @@ onUnmounted(() => {
       <p class="status" role="status">{{ statusMessage }}</p>
       <LinkList
         :links="filteredLinks"
+        :total-links="links.length"
+        :active-tag="activeTag"
         :search-query="searchQuery"
+        :show-favourites-only="showFavouritesOnly"
         :deleting-id="deletingId"
         :toggling-id="togglingId"
         :is-loading="isLoading"
@@ -248,6 +257,7 @@ onUnmounted(() => {
         @delete-link="handleDeleteLink"
         @toggle-favourite="handleToggleFavourite"
         @filter-tag="(tag) => (activeTag = tag)"
+        @clear-filters="clearFilters"
       />
     </section>
   </main>

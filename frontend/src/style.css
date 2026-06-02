@@ -1,14 +1,14 @@
 :root {
   color-scheme: light;
-  --bg: #f6f3ee;
-  --panel: #fffdf8;
+  --bg: #f7f8fa;
+  --panel: #ffffff;
   --ink: #1f2933;
   --muted: #667085;
-  --line: #ddd6ca;
+  --line: #d7dde5;
   --accent: #256f6c;
   --accent-dark: #164e4b;
   --danger: #b42318;
-  --shadow: 0 18px 45px rgba(31, 41, 51, 0.1);
+  --shadow: 0 18px 45px rgba(31, 41, 51, 0.08);
 }
 
 * {
@@ -155,6 +155,12 @@ textarea:focus {
 
 .list-tools {
   margin-top: 12px;
+  flex-wrap: wrap;
+  align-items: end;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 14px;
 }
 
 .tag-filter {
@@ -162,7 +168,7 @@ textarea:focus {
 }
 
 .search-box {
-  flex: 1;
+  flex: 1 1 260px;
   position: relative;
   display: flex;
   align-items: center;
@@ -240,7 +246,7 @@ button:disabled {
 }
 
 .secondary-button:hover {
-  background: #ebe4d7;
+  background: #eef2f6;
 }
 
 .links-list {
@@ -251,6 +257,16 @@ button:disabled {
 
 .links-list > li {
   padding: 18px;
+}
+
+.link-item {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.link-item:hover {
+  border-color: rgba(37, 111, 108, 0.28);
+  box-shadow: 0 20px 42px rgba(31, 41, 51, 0.12);
+  transform: translateY(-1px);
 }
 
 .link-title {
@@ -312,6 +328,35 @@ button:disabled {
 .empty-state {
   color: var(--muted);
   text-align: center;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 36px 24px;
+}
+
+.empty-state h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.15rem;
+}
+
+.empty-state p {
+  max-width: 560px;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.empty-state-mark {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(37, 111, 108, 0.22);
+  border-radius: 50%;
+  background: #e2f2ef;
+  color: var(--accent-dark);
+  font-size: 1.6rem;
+  font-weight: 800;
 }
 
 .error-state {
@@ -336,5 +381,15 @@ button:disabled {
     align-items: stretch;
     flex-direction: column;
     grid-template-columns: 1fr;
+  }
+
+  .search-box,
+  .sort-tool,
+  .sort-tool select,
+  .tag-filter-container,
+  .tag-filter,
+  .actions-group,
+  .actions-group button {
+    width: 100%;
   }
 }
